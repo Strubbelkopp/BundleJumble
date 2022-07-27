@@ -7,10 +7,10 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
-import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -21,6 +21,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 @Mixin(BundleItem.class)
 public abstract class BundleItemMixin extends Item implements DyeableItem{
@@ -89,7 +90,7 @@ public abstract class BundleItemMixin extends Item implements DyeableItem{
                             itemStack.writeNbt(nbtCompound);
                             if (itemStack.getCount() == 0) {
                                 if (!tryRefillItemStack(player, copyItemStack, bundleItemStack, nbtList)) {
-                                    Text outOfItemMessage = Text.translatable("text.bundle_jumble.bundle.out_of_item", Text.translatable(blockItem.getTranslationKey()));
+                                    Text outOfItemMessage = new TranslatableText("text.bundle_jumble.bundle.out_of_item", new TranslatableText(blockItem.getTranslationKey()));
                                     player.sendMessage(outOfItemMessage, true);
                                 }
                             } else {
