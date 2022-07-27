@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "id": "bundle_jumble",
+  "version": "${version}",
+
+  "name": "Bundle Jumble",
+  "description": "Place blocks from your bundle randomly to assist in building",
+  "authors": ["Strubbelkopp"],
+  "contact": {
+    "sources": "https://github.com/Strubbelkopp/BundleJumble",
+    "issues": "https://github.com/Strubbelkopp/BundleJumble/issues"
+  },
+  "license": "MIT",
+  "icon": "assets/bundle_jumble/icon.png",
+
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "dev.strubbelkopp.bundle_jumble.BundleJumble"
+    ],
+    "client": [
+      "dev.strubbelkopp.bundle_jumble.BundleJumbleClient"
+    ]
+  },
+  "mixins": [
+    "bundle_jumble.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.14.8",
+    "fabric": "*",
+    "minecraft": "1.19.x",
+    "java": ">=17"
+  }
+}
