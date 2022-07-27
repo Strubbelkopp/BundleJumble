@@ -11,6 +11,8 @@ jobs:
   build:
     runs-on: ubuntu-20.04
     steps:
+      - name: build
+        run: ./gradlew build
       - uses: Kir-Antipov/mc-publish@v3.1
         with:
           changelog-file: CHANGELOG.md
