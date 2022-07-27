@@ -28,8 +28,7 @@ public abstract class AnimalMateGoalMixin extends Goal {
     @Inject(method = "breed", at = @At("HEAD"))
     private void breedRabbits(CallbackInfo ci) {
         if (this.animal instanceof RabbitEntity) {
-            Random random = new Random();
-            for (int i = 0; i < random.nextInt(3); i++) {
+            for (int i = 0; i < new Random().nextInt(3); i++) {
                 this.animal.breed((ServerWorld) this.world, this.mate);
             }
         }
