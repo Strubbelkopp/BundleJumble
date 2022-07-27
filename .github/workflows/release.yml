@@ -1,0 +1,21 @@
+name: release
+on:
+  workflow_dispatch:
+    inputs:
+      versionType:
+        description: 'Version Type: (Release, Beta, Alpha)'
+        required: true
+        default: 'release'
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: Kir-Antipov/mc-publish@v3.1
+        with:
+          changelog-file: CHANGELOG.md
+          version-type: ${{ github.event.inputs.versionType }}
+
+          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+          curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
