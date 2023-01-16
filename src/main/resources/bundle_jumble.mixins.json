@@ -6,8 +6,7 @@
   "mixins": [
     "AnimalMateGoalMixin",
     "BlockItemMixin",
-    "BundleItemMixin",
-    "ItemMixin"
+    "BundleItemMixin"
   ],
   "injectors": {
     "defaultRequire": 1
