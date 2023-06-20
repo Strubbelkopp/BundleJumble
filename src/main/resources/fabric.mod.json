@@ -33,7 +33,7 @@
   },
   "custom": {
     "mc-publish": {
-      "quilt": true,
+      "loaders": ["fabric", "quilt"]
       "modrinth": "DPswGlhM",
       "curseforge": "651847"
     }
