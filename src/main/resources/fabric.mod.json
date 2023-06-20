@@ -26,14 +26,14 @@
     "bundle_jumble.mixins.json"
   ],
   "depends": {
-    "fabricloader": ">=0.14.12",
+    "fabricloader": ">=0.14.21",
     "fabric": "*",
-    "minecraft": "1.19.3",
+    "minecraft": "1.20.1",
     "java": ">=17"
   },
   "custom": {
     "mc-publish": {
-      "quilt": true,
+      "loaders": ["fabric", "quilt"],
       "modrinth": "DPswGlhM",
       "curseforge": "651847"
     }

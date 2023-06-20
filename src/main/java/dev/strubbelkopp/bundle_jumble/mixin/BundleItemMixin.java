@@ -63,47 +63,49 @@ public abstract class BundleItemMixin extends Item implements DyeableItem{
     @Override
     public ActionResult useOnBlock(ItemUsageContext context) {
         PlayerEntity player = context.getPlayer();
-        if (player != null && !player.isSneaking()) {
-            ItemStack bundleItemStack = player.getStackInHand(context.getHand());
-            NbtCompound bundleNbtCompound = bundleItemStack.getOrCreateNbt();
-            if (bundleNbtCompound.contains(ITEMS_KEY)) {
-                World world = context.getWorld();
-                NbtList nbtList = bundleNbtCompound.getList(ITEMS_KEY, NbtElement.COMPOUND_TYPE);
-                List<Integer> availableIndexes = containedBlockIndexes(nbtList);
-                ActionResult result = ActionResult.FAIL;
-                while (!availableIndexes.isEmpty() && !(result == ActionResult.success(world.isClient))) {
-                    Random random = world.getRandom();
-                    random.setSeed(bundleNbtCompound.getLong(SEED_KEY));
-                    bundleNbtCompound.putLong(SEED_KEY, random.nextLong());
-                    int index = random.nextInt(availableIndexes.size());
-                    int compoundIndex = availableIndexes.get(index);
-                    NbtCompound nbtCompound = nbtList.getCompound(compoundIndex);
-                    ItemStack itemStack = ItemStack.fromNbt(nbtCompound);
-                    BlockItem blockItem = (BlockItem) itemStack.getItem();
-                    result = blockItem.useOnBlock(context);
-                    if (result == ActionResult.success(world.isClient)) {
-                        if (!player.isCreative()) {
-                            ItemStack copyItemStack = itemStack.copy();
-                            nbtList.remove(nbtCompound);
-                            itemStack.decrement(1);
-                            itemStack.writeNbt(nbtCompound);
-                            if (itemStack.getCount() == 0) {
-                                if (!tryRefillItemStack(player, copyItemStack, bundleItemStack, nbtList)) {
-                                    Text outOfItemMessage = Text.translatable("text.bundle_jumble.bundle.out_of_item", Text.translatable(blockItem.getTranslationKey()));
-                                    player.sendMessage(outOfItemMessage, true);
-                                }
-                            } else {
-                                nbtList.add(0, nbtCompound);
-                            }
-                            if (nbtList.isEmpty()) {
-                                bundleItemStack.removeSubNbt(ITEMS_KEY);
-                            }
+        if (player == null || player.isSneaking()) {
+            return super.useOnBlock(context);
+        }
+        ItemStack bundleItemStack = player.getStackInHand(context.getHand());
+        NbtCompound bundleNbtCompound = bundleItemStack.getOrCreateNbt();
+        if (!bundleNbtCompound.contains(ITEMS_KEY)) {
+            return super.useOnBlock(context);
+        }
+        World world = context.getWorld();
+        NbtList nbtList = bundleNbtCompound.getList(ITEMS_KEY, NbtElement.COMPOUND_TYPE);
+        List<Integer> availableIndexes = containedBlockIndexes(nbtList);
+        ActionResult result = ActionResult.FAIL;
+        while (!availableIndexes.isEmpty() && !(result == ActionResult.success(world.isClient))) {
+            Random random = world.getRandom();
+            random.setSeed(bundleNbtCompound.getLong(SEED_KEY));
+            bundleNbtCompound.putLong(SEED_KEY, random.nextLong());
+            int index = random.nextInt(availableIndexes.size());
+            int compoundIndex = availableIndexes.get(index);
+            NbtCompound nbtCompound = nbtList.getCompound(compoundIndex);
+            ItemStack itemStack = ItemStack.fromNbt(nbtCompound);
+            BlockItem blockItem = (BlockItem) itemStack.getItem();
+            result = blockItem.useOnBlock(context);
+            if (result == ActionResult.success(world.isClient)) {
+                if (!player.isCreative()) {
+                    ItemStack copyItemStack = itemStack.copy();
+                    nbtList.remove(nbtCompound);
+                    itemStack.decrement(1);
+                    itemStack.writeNbt(nbtCompound);
+                    if (itemStack.getCount() == 0) {
+                        if (!tryRefillItemStack(player, copyItemStack, bundleItemStack, nbtList)) {
+                            Text outOfItemMessage = Text.translatable("text.bundle_jumble.bundle.out_of_item", Text.translatable(blockItem.getTranslationKey()));
+                            player.sendMessage(outOfItemMessage, true);
                         }
-                        return result;
                     } else {
-                        availableIndexes.remove(index);
+                        nbtList.add(0, nbtCompound);
+                    }
+                    if (nbtList.isEmpty()) {
+                        bundleItemStack.removeSubNbt(ITEMS_KEY);
                     }
                 }
+                return result;
+            } else {
+                availableIndexes.remove(index);
             }
         }
         return super.useOnBlock(context);

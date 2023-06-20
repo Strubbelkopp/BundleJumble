@@ -1,8 +1,1 @@
-- Right-clicking with a bundle will place a random block from the bundle
-- Throwing out all items now requires holding shift
-- If your bundle runs out of a block, it checks your inventory if you have more of that item and automatically refills your bundle
-- If that's not the case, you'll get a message saying, you've run out of that block
-- Bundle can now be recoloured with near infinite colour combinations using the vanilla colouring system
-- Adds a recipe for the bundle, using either leather or rabbit hide
-- Rabbits now have the possibility to get up to 3 babies when breeding them, making it easier to get rabbit hide (You monster!)
-- Readded the bundle to the creative inventory under 'Tools'
+- Updated to 1.20.1
