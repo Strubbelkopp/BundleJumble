@@ -15,6 +15,9 @@ repositories {
 
 	// REI
 	maven { url "https://maven.shedaniel.me" }
+
+	// YACL
+	maven { url 'https://maven.isxander.dev/releases' }
 }
 
 dependencies {
@@ -31,6 +34,9 @@ dependencies {
 
 	// REI
 	modRuntimeOnly "me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}"
+
+	// YACL
+	modImplementation("dev.isxander.yacl:yet-another-config-lib-fabric:${project.yacl_version}")
 }
 
 processResources {
