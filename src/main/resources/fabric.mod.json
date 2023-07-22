@@ -20,6 +20,9 @@
     ],
     "client": [
       "dev.strubbelkopp.bundle_jumble.BundleJumbleClient"
+    ],
+    "modmenu": [
+      "dev.strubbelkopp.bundle_jumble.config.ModMenuIntegration"
     ]
   },
   "mixins": [
@@ -29,7 +32,8 @@
     "fabricloader": ">=0.14.21",
     "fabric": "*",
     "minecraft": "1.20.1",
-    "java": ">=17"
+    "java": ">=17",
+    "yet_another_config_lib_v3": "*"
   },
   "custom": {
     "mc-publish": {

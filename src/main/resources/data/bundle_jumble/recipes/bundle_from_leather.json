@@ -16,5 +16,13 @@
   "result": {
     "item": "minecraft:bundle",
     "count": 1
-  }
+  },
+  "fabric:load_conditions": [
+    {
+      "condition": "bundle_jumble:config_options_enabled",
+      "options": [
+        "enable_leather_recipe"
+      ]
+    }
+  ]
 }

@@ -1,5 +1,6 @@
 package dev.strubbelkopp.bundle_jumble.mixin;
 
+import dev.strubbelkopp.bundle_jumble.config.Config;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.*;
@@ -15,6 +16,7 @@ import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -27,8 +29,8 @@ public abstract class BundleItemMixin extends Item implements DyeableItem{
 
     @Shadow @Final private static String ITEMS_KEY;
     @Shadow @Final public static int MAX_STORAGE;
-    private static final int DEFAULT_COLOR = 0xcc7b46;
-    private static final String SEED_KEY = "Seed";
+    @Unique private static final int DEFAULT_COLOR = 0xcc7b46;
+    @Unique private static final String SEED_KEY = "Seed";
 
     @Override
     public int getColor(ItemStack stack) {
@@ -55,7 +57,7 @@ public abstract class BundleItemMixin extends Item implements DyeableItem{
 
     @Inject(method = "use", at = @At("HEAD"), cancellable = true)
     public void use(World world, PlayerEntity user, Hand hand, CallbackInfoReturnable<TypedActionResult<ItemStack>> cir) {
-        if (!user.isSneaking()) {
+        if (!Config.INSTANCE.shift_drops_items || !user.isSneaking()) {
             cir.setReturnValue(TypedActionResult.fail(user.getStackInHand(hand)));
         }
     }
@@ -63,7 +65,7 @@ public abstract class BundleItemMixin extends Item implements DyeableItem{
     @Override
     public ActionResult useOnBlock(ItemUsageContext context) {
         PlayerEntity player = context.getPlayer();
-        if (player == null || player.isSneaking()) {
+        if (player == null || (player.isSneaking() && Config.INSTANCE.shift_drops_items)) {
             return super.useOnBlock(context);
         }
         ItemStack bundleItemStack = player.getStackInHand(context.getHand());
@@ -92,7 +94,7 @@ public abstract class BundleItemMixin extends Item implements DyeableItem{
                     itemStack.decrement(1);
                     itemStack.writeNbt(nbtCompound);
                     if (itemStack.getCount() == 0) {
-                        if (!tryRefillItemStack(player, copyItemStack, bundleItemStack, nbtList)) {
+                        if (!Config.INSTANCE.automatic_refill || !tryRefillItemStack(player, copyItemStack, bundleItemStack, nbtList)) {
                             Text outOfItemMessage = Text.translatable("text.bundle_jumble.bundle.out_of_item", Text.translatable(blockItem.getTranslationKey()));
                             player.sendMessage(outOfItemMessage, true);
                         }
@@ -111,9 +113,11 @@ public abstract class BundleItemMixin extends Item implements DyeableItem{
         return super.useOnBlock(context);
     }
 
+    @Unique
     static private Boolean tryRefillItemStack(PlayerEntity player, ItemStack itemStack, ItemStack bundleItemStack, NbtList nbtList) {
         PlayerInventory inventory = player.getInventory();
-        for (int i = 9; i < 36; i++) { //only search for blocks that are in the 3x9 space above the hotbar (index 9-36)
+        int start_index = (Config.INSTANCE.refill_searches_hotbar) ? 0 : 9;
+        for (int i = start_index; i < 36; i++) {
             ItemStack inventoryItemStack = inventory.getStack(i);
             if (ItemStack.canCombine(inventoryItemStack, itemStack)) {
                 int j = getBundleOccupancy(bundleItemStack);
@@ -131,6 +135,7 @@ public abstract class BundleItemMixin extends Item implements DyeableItem{
         return false;
     }
 
+    @Unique
     private List<Integer> containedBlockIndexes(NbtList nbtList) {
         List<Integer> availableIndexes = new ArrayList<>();
         for (int i = 0; i < nbtList.size(); i++) {

@@ -1,5 +1,6 @@
 package dev.strubbelkopp.bundle_jumble.mixin;
 
+import dev.strubbelkopp.bundle_jumble.config.Config;
 import net.minecraft.entity.ai.goal.AnimalMateGoal;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.passive.AnimalEntity;
@@ -27,7 +28,7 @@ public abstract class AnimalMateGoalMixin extends Goal {
 
     @Inject(method = "breed", at = @At("HEAD"))
     private void breedRabbits(CallbackInfo ci) {
-        if (this.animal instanceof RabbitEntity) {
+        if (Config.INSTANCE.more_bunnies && this.animal instanceof RabbitEntity) {
             for (int i = 0; i < new Random().nextInt(3); i++) {
                 this.animal.breed((ServerWorld) this.world, this.mate);
             }
