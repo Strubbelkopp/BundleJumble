@@ -20,6 +20,7 @@ public class Config {
     public static final Gson GSON = new GsonBuilder()
             .setPrettyPrinting()
             .create();
+
     public static final Path CONFIG_FILE = FabricLoader.getInstance()
             .getConfigDir().resolve("bundle_jumble.json");
 
