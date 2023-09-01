@@ -1,0 +1,15 @@
+{
+  "text.bundle_jumble.bundle.out_of_item": "Dir ist folgendes ausgegangen: %s",
+  "text.bundle_jumble.config.title": "Bundle Jumble Konfiguration",
+  "text.bundle_jumble.config.general_category": "Generell",
+  "text.bundle_jumble.config.shift_drops_items": "Umschalttaste lässt Inhalt fallen",
+  "text.bundle_jumble.config.shift_drops_items_description": "Umschalttaste(Shift) + Rechtsklick mit einem gefülltem Bündel in deiner Hand lässt den gesammten Inhalt fallen",
+  "text.bundle_jumble.config.more_bunnies": "Mehr Häschen",
+  "text.bundle_jumble.config.more_bunnies_description": "Wenn sich zwei Hasen paaren, besteht die Chance, dass bis zu 3 weitere Häschen geboren werden",
+  "text.bundle_jumble.config.automatic_refill": "Automatisch nachfüllen",
+  "text.bundle_jumble.config.automatic_refill_description": "Wenn deinem Bündel ein bestimmter Block ausgeht, wird dein Inventar nach Blöcken gleicher Art durchsucht. Falls es einen Treffer gab, wird dieser Stack in das Bündel übertragen",
+  "text.bundle_jumble.config.refill_searches_hotbar": "Nachfüllen durchsucht Schnellzugriffsleiste ",
+  "text.bundle_jumble.config.refill_searches_description": "Beim suchen nach einem Stack zum nachfüllen wird auch die Schnellzugriffsleiste durchsucht",
+  "text.bundle_jumble.config.enable_leather_recipe": "Aktiviere Leder Rezept",
+  "text.bundle_jumble.config.enable_leather_recipe_description": "Erlaubt es dir, zusätzlich zu Hasenfell, das Bündel auch mit normalem Leder herzustellen\n\nErfordert das Neuladen der Welt!"
+}
