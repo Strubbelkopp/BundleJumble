@@ -1,0 +1,15 @@
+{
+  "text.bundle_jumble.bundle.out_of_item": "У больше нет %s",
+  "text.bundle_jumble.config.title": "Мешковая путаница",
+  "text.bundle_jumble.config.general_category": "Общие",
+  "text.bundle_jumble.config.shift_drops_items": "Shift выбрасывает предметы",
+  "text.bundle_jumble.config.shift_drops_items_description": "Щелчок с зажатым Shift по непустому мешку в главной руке сброит его содержимое",
+  "text.bundle_jumble.config.more_bunnies": "Больше кроликов",
+  "text.bundle_jumble.config.more_bunnies_description": "Когда два кролика размножаются, есть шанс, что появится ещё до 3 дополнительных кроликов",
+  "text.bundle_jumble.config.automatic_refill": "Автоматическое пополнение",
+  "text.bundle_jumble.config.automatic_refill_description": "Когда в мешке закончится определенный блок, он попытается найти в вашем инвентаре блок того же типа и перенесёт их в мешок",
+  "text.bundle_jumble.config.refill_searches_hotbar": "Пополнение из панели быстрого доступа",
+  "text.bundle_jumble.config.refill_searches_description": "При попытке пополниться мешок также будет выполнять поиск в панели быстрого доступа",
+  "text.bundle_jumble.config.enable_leather_recipe": "Включить рецепт с кожей",
+  "text.bundle_jumble.config.enable_leather_recipe_description": "Позволяет создать мешок, используя обычную кожу в дополнение к кроличьей шкурке.\n\nТребуется перезапуск мира!"
+}
