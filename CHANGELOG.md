@@ -1,5 +1,3 @@
-- Added several config options:
-  - Toggle emptying bundle with shift-right click
-  - Toggle more offspring from rabbits
-  - Toggle automatic refilling (& whether it should check hotbar)
-  - Toggle bundle recipe using leather
+- Added translations
+  - Russian (by mpustovoi)
+  - German (by me)
