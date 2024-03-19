@@ -37,7 +37,7 @@ public class Config {
                 .title(Text.translatable("text.bundle_jumble.config.title"))
                 .category(ConfigCategory.createBuilder()
                         .name(Text.translatable("text.bundle_jumble.config.general_category"))
-                        .option(Option.createBuilder(boolean.class)
+                        .option(Option.<Boolean>createBuilder()
                                 .name(Text.translatable("text.bundle_jumble.config.shift_drops_items"))
                                 .description(OptionDescription.of(Text.translatable("text.bundle_jumble.config.shift_drops_items_description")))
                                 .controller(TickBoxControllerBuilder::create)
@@ -47,7 +47,7 @@ public class Config {
                                         newValue -> Config.INSTANCE.shift_drops_items = newValue
                                 )
                                 .build())
-                        .option(Option.createBuilder(boolean.class)
+                        .option(Option.<Boolean>createBuilder()
                                 .name(Text.translatable("text.bundle_jumble.config.more_bunnies"))
                                 .description(OptionDescription.of(Text.translatable("text.bundle_jumble.config.more_bunnies_description")))
                                 .controller(TickBoxControllerBuilder::create)
@@ -57,7 +57,7 @@ public class Config {
                                         newValue -> Config.INSTANCE.more_bunnies = newValue
                                 )
                                 .build())
-                        .option(Option.createBuilder(boolean.class)
+                        .option(Option.<Boolean>createBuilder()
                                 .name(Text.translatable("text.bundle_jumble.config.automatic_refill"))
                                 .description(OptionDescription.of(Text.translatable("text.bundle_jumble.config.automatic_refill_description")))
                                 .controller(TickBoxControllerBuilder::create)
@@ -67,7 +67,7 @@ public class Config {
                                         newValue -> Config.INSTANCE.automatic_refill = newValue
                                 )
                                 .build())
-                        .option(Option.createBuilder(boolean.class)
+                        .option(Option.<Boolean>createBuilder()
                                 .name(Text.translatable("text.bundle_jumble.config.refill_searches_hotbar"))
                                 .description(OptionDescription.of(Text.translatable("text.bundle_jumble.config.refill_searches_description")))
                                 .controller(TickBoxControllerBuilder::create)
@@ -77,7 +77,7 @@ public class Config {
                                         newValue -> Config.INSTANCE.refill_searches_hotbar = newValue
                                 )
                                 .build())
-                        .option(Option.createBuilder(boolean.class)
+                        .option(Option.<Boolean>createBuilder()
                                 .name(Text.translatable("text.bundle_jumble.config.enable_leather_recipe"))
                                 .description(OptionDescription.of(Text.translatable("text.bundle_jumble.config.enable_leather_recipe_description")))
                                 .controller(TickBoxControllerBuilder::create)
