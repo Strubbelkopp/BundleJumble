@@ -1,21 +1,20 @@
 package dev.strubbelkopp.bundle_jumble.mixin;
 
+import dev.strubbelkopp.bundle_jumble.BundleJumble;
 import dev.strubbelkopp.bundle_jumble.config.Config;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.BundleContentsComponent;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.*;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Pair;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -25,31 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Mixin(BundleItem.class)
-public abstract class BundleItemMixin extends Item implements DyeableItem{
-
-    @Shadow @Final private static String ITEMS_KEY;
-    @Shadow @Final public static int MAX_STORAGE;
-    @Unique private static final int DEFAULT_COLOR = 0xcc7b46;
-    @Unique private static final String SEED_KEY = "Seed";
-
-    @Override
-    public int getColor(ItemStack stack) {
-        NbtCompound nbtCompound = stack.getSubNbt(DISPLAY_KEY);
-        if (nbtCompound != null && nbtCompound.contains(COLOR_KEY, NbtElement.NUMBER_TYPE)) {
-            return nbtCompound.getInt(COLOR_KEY);
-        }
-        return DEFAULT_COLOR;
-    }
-
-    @Shadow
-    private static int getBundleOccupancy(ItemStack stack) {
-        throw new IllegalCallerException();
-    }
-
-    @Shadow
-    private static int getItemOccupancy(ItemStack stack) {
-        throw new IllegalCallerException();
-    }
+public abstract class BundleItemMixin extends Item {
 
     public BundleItemMixin(Settings settings) {
         super(settings);
@@ -68,84 +43,88 @@ public abstract class BundleItemMixin extends Item implements DyeableItem{
         if (player == null || (player.isSneaking() && Config.INSTANCE.shift_drops_items)) {
             return super.useOnBlock(context);
         }
+
         ItemStack bundleItemStack = player.getStackInHand(context.getHand());
-        NbtCompound bundleNbtCompound = bundleItemStack.getOrCreateNbt();
-        if (!bundleNbtCompound.contains(ITEMS_KEY)) {
+        BundleContentsComponent bundleContentsComponent = bundleItemStack.get(DataComponentTypes.BUNDLE_CONTENTS);
+        if (bundleContentsComponent == null || bundleContentsComponent.isEmpty()) {
             return super.useOnBlock(context);
         }
+
         World world = context.getWorld();
-        NbtList nbtList = bundleNbtCompound.getList(ITEMS_KEY, NbtElement.COMPOUND_TYPE);
-        List<Integer> availableIndexes = containedBlockIndexes(nbtList);
         ActionResult result = ActionResult.FAIL;
-        while (!availableIndexes.isEmpty() && !(result == ActionResult.success(world.isClient))) {
+        List<Integer> availableIndexes = containedBlockIndexes(bundleContentsComponent);
+        while(!availableIndexes.isEmpty() && result != ActionResult.success(world.isClient)) {
             Random random = world.getRandom();
-            random.setSeed(bundleNbtCompound.getLong(SEED_KEY));
-            bundleNbtCompound.putLong(SEED_KEY, random.nextLong());
-            int index = random.nextInt(availableIndexes.size());
-            int compoundIndex = availableIndexes.get(index);
-            NbtCompound nbtCompound = nbtList.getCompound(compoundIndex);
-            ItemStack itemStack = ItemStack.fromNbt(nbtCompound);
-            BlockItem blockItem = (BlockItem) itemStack.getItem();
+            random.setSeed(bundleItemStack.getOrDefault(BundleJumble.RANDOM_SEED, random.nextLong()));
+            bundleItemStack.set(BundleJumble.RANDOM_SEED, random.nextLong());
+            int randomIndex = random.nextInt(availableIndexes.size());
+            BlockItem blockItem = (BlockItem) bundleContentsComponent.get(randomIndex).getItem();
+
             result = blockItem.useOnBlock(context);
             if (result == ActionResult.success(world.isClient)) {
-                if (!player.isCreative()) {
-                    ItemStack copyItemStack = itemStack.copy();
-                    nbtList.remove(nbtCompound);
-                    itemStack.decrement(1);
-                    itemStack.writeNbt(nbtCompound);
-                    if (itemStack.getCount() == 0) {
-                        if (!Config.INSTANCE.automatic_refill || !tryRefillItemStack(player, copyItemStack, bundleItemStack, nbtList)) {
-                            Text outOfItemMessage = Text.translatable("text.bundle_jumble.bundle.out_of_item", Text.translatable(blockItem.getTranslationKey()));
-                            player.sendMessage(outOfItemMessage, true);
-                        }
-                    } else {
-                        nbtList.add(0, nbtCompound);
-                    }
-                    if (nbtList.isEmpty()) {
-                        bundleItemStack.removeSubNbt(ITEMS_KEY);
-                    }
+                if (!world.isClient && !player.isCreative()) {
+                    removeItem(player, bundleItemStack, randomIndex);
                 }
                 return result;
             } else {
-                availableIndexes.remove(index);
+                availableIndexes.remove(randomIndex);
             }
         }
         return super.useOnBlock(context);
     }
 
     @Unique
-    static private Boolean tryRefillItemStack(PlayerEntity player, ItemStack itemStack, ItemStack bundleItemStack, NbtList nbtList) {
-        PlayerInventory inventory = player.getInventory();
-        int start_index = (Config.INSTANCE.refill_searches_hotbar) ? 0 : 9;
-        for (int i = start_index; i < 36; i++) {
-            ItemStack inventoryItemStack = inventory.getStack(i);
-            if (ItemStack.canCombine(inventoryItemStack, itemStack)) {
-                int j = getBundleOccupancy(bundleItemStack);
-                int k = getItemOccupancy(inventoryItemStack);
-                int l = Math.min(inventoryItemStack.getCount(), (MAX_STORAGE - j) / k);
-                ItemStack newItemStack = inventoryItemStack.copy();
-                newItemStack.setCount(l);
-                NbtCompound newNbtCompound = new NbtCompound();
-                newItemStack.writeNbt(newNbtCompound);
-                nbtList.add(0, newNbtCompound);
-                inventory.removeStack(i, l);
-                return true;
-            }
-        }
-        return false;
-    }
-
-    @Unique
-    private List<Integer> containedBlockIndexes(NbtList nbtList) {
+    private List<Integer> containedBlockIndexes(BundleContentsComponent bundleContentsComponent) {
         List<Integer> availableIndexes = new ArrayList<>();
-        for (int i = 0; i < nbtList.size(); i++) {
-            NbtCompound nbtCompound = nbtList.getCompound(i);
-            ItemStack itemStack =  ItemStack.fromNbt(nbtCompound);
-            Item item = itemStack.getItem();
-            if (item instanceof BlockItem) {
+        for (int i = 0; i < bundleContentsComponent.size(); i++) {
+            if (bundleContentsComponent.get(i).getItem() instanceof BlockItem) {
                 availableIndexes.add(i);
             }
         }
         return availableIndexes;
+    }
+
+    @Unique
+    private void removeItem(PlayerEntity player, ItemStack bundleItemStack, int index) {
+        BundleContentsComponent bundleContentsComponent = bundleItemStack.get(DataComponentTypes.BUNDLE_CONTENTS);
+        if (bundleContentsComponent != null && !bundleContentsComponent.isEmpty()) {
+            List<ItemStack> stacks = new ArrayList<>(bundleContentsComponent.stream().toList());
+            ItemStack itemStack = bundleContentsComponent.get(index).copy();
+            ItemStack itemStackCopy = itemStack.copy();
+
+            itemStack.decrement(1);
+            if (!itemStack.isEmpty()) {
+                stacks.set(index, itemStack);
+                bundleContentsComponent = new BundleContentsComponent(stacks);
+            } else {
+                stacks.remove(index);
+                bundleContentsComponent = new BundleContentsComponent(stacks);
+                Pair<BundleContentsComponent, Boolean> result = tryRefillItemStack(player, itemStackCopy, bundleContentsComponent);
+                bundleContentsComponent = result.getLeft();
+                if (!Config.INSTANCE.automatic_refill || !result.getRight()) {
+                    player.sendMessage(Text.translatable("text.bundle_jumble.bundle.out_of_item", Text.translatable(itemStackCopy.getTranslationKey())), true);
+                }
+            }
+
+            bundleItemStack.set(DataComponentTypes.BUNDLE_CONTENTS, bundleContentsComponent);
+        }
+    }
+
+    @Unique
+    private Pair<BundleContentsComponent, Boolean> tryRefillItemStack(PlayerEntity player, ItemStack itemStack, BundleContentsComponent bundleContentsComponent) {
+        PlayerInventory inventory = player.getInventory();
+        int start_index = (Config.INSTANCE.refill_searches_hotbar) ? 0 : 9;
+        for (int i = start_index; i < 36; i++) {
+            ItemStack inventoryItemStack = inventory.getStack(i);
+            if (ItemStack.areItemsAndComponentsEqual(inventoryItemStack, itemStack)) {
+                BundleContentsComponent.Builder builder = new BundleContentsComponent.Builder(bundleContentsComponent);
+                int itemsAdded = builder.add(inventoryItemStack);
+                if (itemsAdded > 0) {
+                    inventory.removeStack(i, itemsAdded);
+                    return new Pair<>(builder.build(), true);
+                }
+            }
+        }
+        return new Pair<>(bundleContentsComponent, false);
     }
 }

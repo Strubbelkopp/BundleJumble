@@ -1,5 +1,7 @@
 {
   "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "group": "bundle",
   "pattern": [
     "SLS",
     "L L",
@@ -14,7 +16,7 @@
     }
   },
   "result": {
-    "item": "minecraft:bundle",
+    "id": "minecraft:bundle",
     "count": 1
   },
   "fabric:load_conditions": [
