@@ -57,7 +57,7 @@ public abstract class BundleItemMixin extends Item {
             Random random = world.getRandom();
             random.setSeed(bundleItemStack.getOrDefault(BundleJumble.RANDOM_SEED, random.nextLong()));
             bundleItemStack.set(BundleJumble.RANDOM_SEED, random.nextLong());
-            int randomIndex = random.nextInt(availableIndexes.size());
+            int randomIndex = availableIndexes.get(random.nextInt(availableIndexes.size()));
             BlockItem blockItem = (BlockItem) bundleContentsComponent.get(randomIndex).getItem();
 
             result = blockItem.useOnBlock(context);
